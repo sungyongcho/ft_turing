@@ -15,7 +15,6 @@ OCAMLC = ocamlc
 OCAMLOPT = ocamlopt
 OPAM = opam
 
-# Default target
 all: check_deps build_native
 
 # Check and install missing dependencies
@@ -27,21 +26,20 @@ check_deps:
 		fi \
 	done
 
-# Build native executable with ocamlopt
 build_native: $(SOURCES)
 	$(OCAMLOPT) $(OCAMLFLAGS) -o $(EXECUTABLE) $(SOURCES)
 
-# Build bytecode executable with ocamlc
-build_bytecode: $(SOURCES)
+build_bytecode:	$(SOURCES)
 	$(OCAMLC) $(OCAMLFLAGS) -o $(EXECUTABLE).byte $(SOURCES)
 
 # Clean build files
 clean:
 	rm -f $(CMOS) $(CMIS) $(CMXS) $(OS)
 
-# Full clean (clean + executable files)
-fclean: clean
+fclean:	clean
 	rm -f $(EXECUTABLE) $(EXECUTABLE).byte
+
+re:	fclean all
 
 # Phony targets
 .PHONY: all check_deps build_native build_bytecode clean fclean
