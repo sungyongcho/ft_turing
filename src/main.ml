@@ -37,7 +37,20 @@ let usage_msg =
       prerr_endline usage_msg;
       exit 1
     );
-    print_endline !jsonfile;
-    print_endline !input_arg;
+    print_endline ("input_arg: [" ^ !input_arg ^"]");
+    (* print_endline !jsonfile; *)
 
-    (* Main functionality here *)
+    print_endline ("jsonfile name: " ^ !input_arg);
+    let ic = open_in !jsonfile in
+    try
+      while true do
+        let line = input_line ic in
+        print_endline line
+      done
+    with
+    | End_of_file ->
+      close_in ic
+    | e ->
+      close_in_noerr ic;
+      raise e
+
