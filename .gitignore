@@ -1,0 +1,17 @@
+# Ignore the main executable and its bytecode version
+ft_turing
+ft_turing.byte
+
+# Ignore OCaml compiled interface and object files
+*.cmi
+*.cmo
+*.cmx
+*.o
+
+# If you have a build directory, ignore it as well
+_build/
+
+# Ignore editor and tool specific files
+*.swp
+*.swo
+*~
