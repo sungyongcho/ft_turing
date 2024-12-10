@@ -1,20 +1,21 @@
-# Variables
-SOURCES	=	parser.ml \
-			main.ml
-
-BIN_DIR = bin
 EXECUTABLE = ft_turing
-LIBS = batteries yojson
-OCAMLFLAGS = -thread
 
-# Convert LIBS into package flags
-PKGFLAGS = $(addprefix -package ,$(LIBS)) -linkpkg
+SOURCES = parser.ml \
+          main.ml
+BIN_DIR = bin
+
+LIBS = yojson
+
+# Compiler and linker flags
+OCAMLFLAGS = -thread
+PKGFLAGS = $(foreach lib,$(LIBS),-package $(lib)) -linkpkg
+INCLUDE_DIRS = -I $(BIN_DIR)
 
 # Derived variables
-CMOS = $(SOURCES:.ml=.cmo)
-CMIS = $(SOURCES:.ml=.cmi)
-CMXS = $(SOURCES:.ml=.cmx)
-OS = $(SOURCES:.ml=.o)
+CMOS = $(addprefix $(BIN_DIR)/, $(SOURCES:.ml=.cmo))
+CMIS = $(addprefix $(BIN_DIR)/, $(SOURCES:.ml=.cmi))
+CMXS = $(addprefix $(BIN_DIR)/, $(SOURCES:.ml=.cmx))
+OS = $(addprefix $(BIN_DIR)/, $(SOURCES:.ml=.o))
 
 # Commands
 OCAMLFIND = ocamlfind
@@ -22,7 +23,6 @@ OCAMLC = $(OCAMLFIND) ocamlc
 OCAMLOPT = $(OCAMLFIND) ocamlopt
 OPAM = opam
 
-# Rules
 all: check_deps build_native
 
 check_deps:
@@ -33,11 +33,20 @@ check_deps:
 	  fi; \
 	done
 
-build_native:
-	$(OCAMLOPT) -I $(BIN_DIR) $(OCAMLFLAGS) $(PKGFLAGS) -o $(EXECUTABLE) $(addprefix $(BIN_DIR)/,$(SOURCES))
+build_native: $(CMXS)
+	$(OCAMLOPT) $(OCAMLFLAGS) $(PKGFLAGS) $(INCLUDE_DIRS) -o $(EXECUTABLE) $^
 
-build_bytecode:
-	$(OCAMLC) -I $(BIN_DIR) $(OCAMLFLAGS) $(PKGFLAGS) -o $(EXECUTABLE).byte $(addprefix $(BIN_DIR)/,$(SOURCES))
+build_bytecode: $(CMOS)
+	$(OCAMLC) $(OCAMLFLAGS) $(PKGFLAGS) $(INCLUDE_DIRS) -o $(EXECUTABLE).byte $^
+
+%.cmo: %.ml
+	$(OCAMLC) $(OCAMLFLAGS) $(PKGFLAGS) $(INCLUDE_DIRS) -c $<
+
+%.cmi: %.ml
+	$(OCAMLC) $(OCAMLFLAGS) $(PKGFLAGS) $(INCLUDE_DIRS) -c $<
+
+%.cmx: %.ml
+	$(OCAMLOPT) $(OCAMLFLAGS) $(PKGFLAGS) $(INCLUDE_DIRS) -c $<
 
 clean:
 	rm -f $(CMOS) $(CMIS) $(CMXS) $(OS)
@@ -47,4 +56,4 @@ fclean: clean
 
 re: fclean all
 
-.PHONY: all check_deps build_native build_bytecode clean fcleanbin
+.PHONY: all check_deps build_native build_bytecode clean fclean re
