@@ -1,5 +1,6 @@
+
 let usage_msg =
-  "usage: ft_turing [-h] jsonfile input
+  "usage: ft_turing [-h,--help] jsonfile input
 
   positional arguments:
     jsonfile        json description of the machine
@@ -41,16 +42,19 @@ let usage_msg =
     (* print_endline !jsonfile; *)
 
     print_endline ("jsonfile name: " ^ !input_arg);
+    (* Read and parse the JSON file *)
     let ic = open_in !jsonfile in
     try
-      while true do
-        let line = input_line ic in
-        print_endline line
-      done
+      let json_data = Yojson.Safe.from_channel ic in
+      close_in ic;
+
+      (* Print the JSON data as a string *)
+      print_endline (Yojson.Safe.to_string json_data)
     with
-    | End_of_file ->
-      close_in ic
+    | Yojson.Json_error msg ->
+      close_in_noerr ic;
+      prerr_endline ("Error parsing JSON: " ^ msg);
+      exit 1
     | e ->
       close_in_noerr ic;
       raise e
-
