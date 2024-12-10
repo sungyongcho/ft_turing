@@ -1,0 +1,9 @@
+{
+  "terminal.integrated.env.linux": {
+    "OPAMROOT": "/home/sucho/goinfre/opamroot"
+  },
+  "ocaml.sandbox": {
+    "kind": "custom",
+    "template": "eval $(opam env --root=/goinfre/sucho/opamroot --switch=5.2.1) && $prog $args"
+  }
+}
