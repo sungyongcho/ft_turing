@@ -1,5 +1,5 @@
 (executable
  (public_name ft_turing)
  (name main)
- (modules parser main)
+ (modules parser print_machine main)
  (libraries yojson))

@@ -41,20 +41,6 @@ let transitions_of_yojson states json =
       failwith ("Invalid state in transitions: " ^ state);
     (state, transitions_json |> to_list |> List.map transition_of_yojson))
 
-let print_transitions transitions =
-  List.iter (fun (state, transitions_list) ->
-      Printf.printf "State: %s\n" state;
-      List.iter (fun transition ->
-          Printf.printf "  Read: %s, Write: %s, To State: %s, Action: %s\n"
-            transition.read
-            transition.write
-            transition.to_state
-            (match transition.action with
-              | Left -> "LEFT"
-              | Right -> "RIGHT")
-        ) transitions_list
-    ) transitions
-
 let validate_blank_alphabet blank alphabet =
   if List.mem blank alphabet then
     ()

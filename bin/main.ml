@@ -40,11 +40,7 @@ let () =
   let machine_json = Yojson.Safe.from_file !jsonfile in
   let machine = Parser.turing_machine_of_yojson machine_json in
 
-  let alphabet_str = String.concat ", " machine.alphabet in
-  let states_str = String.concat ", " machine.states in
 
-  print_endline ("Machine name: " ^ machine.name);
-  print_endline ("Alphabet: [ " ^ alphabet_str ^ " ]");
-  print_endline ("States: [ " ^ states_str ^ " ]");
-  Parser.print_transitions machine.transitions;
+  (* print_endline ("Machine name: " ^ machine.name); *)
+  Print_machine.print_turing_machine machine;
 

@@ -1,7 +1,9 @@
 EXECUTABLE = ft_turing
 
-SOURCES = parser.ml \
-          main.ml
+SOURCES	=	parser.ml \
+			print_machine.ml \
+			main.ml
+
 BIN_DIR = bin
 
 LIBS = yojson
