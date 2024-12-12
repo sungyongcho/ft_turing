@@ -33,31 +33,46 @@ let transition_of_yojson json =
     action = json |> member "action" |> to_string |> action_of_string;
   }
 
-let transitions_of_yojson json =
+let transitions_of_yojson states json =
   json
   |> to_assoc
   |> List.map (fun (state, transitions_json) ->
-        (state, transitions_json |> to_list |> List.map transition_of_yojson))
+    if not (List.mem state states) then
+      failwith ("Invalid state in transitions: " ^ state);
+    (state, transitions_json |> to_list |> List.map transition_of_yojson))
 
-let validate_initial_state initial states =
-  if List.mem initial states then
-    ()
-  else
-    raise (Failure "Initial state not found in the list of states")
+let print_transitions transitions =
+  List.iter (fun (state, transitions_list) ->
+      Printf.printf "State: %s\n" state;
+      List.iter (fun transition ->
+          Printf.printf "  Read: %s, Write: %s, To State: %s, Action: %s\n"
+            transition.read
+            transition.write
+            transition.to_state
+            (match transition.action with
+              | Left -> "LEFT"
+              | Right -> "RIGHT")
+        ) transitions_list
+    ) transitions
 
 let validate_blank_alphabet blank alphabet =
   if List.mem blank alphabet then
     ()
   else
-    raise (Failure "blank not found in the list of alphabets")
+    failwith ("blank not found in the list of alphabets")
+let validate_initial_state initial states =
+  if List.mem initial states then
+    ()
+  else
+    failwith ("Initial state not found in the list of states")
 
 let validate_final_states finals states =
-  if finals = [] then
-    raise (Failure "No final states defined");
-  List.iter (fun final ->
-    if not (List.mem final states) then
-      raise (Failure ("Final state not found: " ^ final)))
-  finals
+ if finals = [] then
+   failwith ("No final states defined");
+ List.iter (fun final ->
+   if not (List.mem final states) then
+     failwith ("Final state not found: " ^ final))
+ finals
 
 let turing_machine_of_yojson json =
   let name = json |> member "name" |> to_string in
@@ -66,7 +81,7 @@ let turing_machine_of_yojson json =
   let states = json |> member "states" |> to_list |> filter_string in
   let initial = json |> member "initial" |> to_string in
   let finals = json |> member "finals" |> to_list |> filter_string in
-  let transitions = json |> member "transitions" |> transitions_of_yojson in
+  let transitions = json |> member "transitions" |> transitions_of_yojson states in
   validate_blank_alphabet blank alphabet;
   validate_initial_state initial states;
   validate_final_states finals states;

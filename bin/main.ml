@@ -46,4 +46,5 @@ let () =
   print_endline ("Machine name: " ^ machine.name);
   print_endline ("Alphabet: [ " ^ alphabet_str ^ " ]");
   print_endline ("States: [ " ^ states_str ^ " ]");
+  Parser.print_transitions machine.transitions;
 
