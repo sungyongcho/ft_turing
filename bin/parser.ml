@@ -46,6 +46,7 @@ let validate_blank_alphabet blank alphabet =
     ()
   else
     failwith ("blank not found in the list of alphabets")
+
 let validate_initial_state initial states =
   if List.mem initial states then
     ()
