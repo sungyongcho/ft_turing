@@ -16,6 +16,7 @@ type turing_machine = {
   states : string list;
   initial : string;
   finals : string list;
+  transitions : (string * transition list) list;
 }
 
 let action_of_string s =
@@ -31,6 +32,12 @@ let transition_of_yojson json =
     write = json |> member "write" |> to_string;
     action = json |> member "action" |> to_string |> action_of_string;
   }
+
+let transitions_of_yojson json =
+  json
+  |> to_assoc
+  |> List.map (fun (state, transitions_json) ->
+        (state, transitions_json |> to_list |> List.map transition_of_yojson))
 
 let validate_initial_state initial states =
   if List.mem initial states then
@@ -59,6 +66,7 @@ let turing_machine_of_yojson json =
   let states = json |> member "states" |> to_list |> filter_string in
   let initial = json |> member "initial" |> to_string in
   let finals = json |> member "finals" |> to_list |> filter_string in
+  let transitions = json |> member "transitions" |> transitions_of_yojson in
   validate_blank_alphabet blank alphabet;
   validate_initial_state initial states;
   validate_final_states finals states;
@@ -69,4 +77,5 @@ let turing_machine_of_yojson json =
     states = states;
     initial = initial;
     finals = finals;
+    transitions = transitions;
   }
