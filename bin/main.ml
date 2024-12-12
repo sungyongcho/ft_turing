@@ -28,7 +28,6 @@ let usage_msg =
       exit 1
     )
 
-
 let () =
   Arg.parse speclist anon_fun "";
   if !jsonfile = "" || !input_arg = "" then (
@@ -40,4 +39,10 @@ let () =
   (* Parse and store the machine *)
   let machine_json = Yojson.Safe.from_file !jsonfile in
   let machine = Parser.turing_machine_of_yojson machine_json in
-  print_endline ("testing " ^ machine.name)
+
+  let alphabet_str = String.concat ", " machine.alphabet in
+  let states_str = String.concat ", " machine.states in
+
+  print_endline ("Machine name: " ^ machine.name);
+  print_endline ("Alphabet: [ " ^ alphabet_str ^ " ]");
+  print_endline ("States: [ " ^ states_str ^ " ]");
