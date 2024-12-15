@@ -2,21 +2,24 @@
   "name": "unary_add",
   "alphabet": ["1", ".", "+", "="],
   "blank": ".",
-  "states": ["scanright", "shiftone", "cleanup", "HALT"],
-  "initial": "scanright",
+  "states": ["find_plus", "shiftone", "cleanup", "HALT"],
+  "initial": "find_plus",
   "finals": ["HALT"],
   "transitions": {
-    "scanright": [
-      { "read": "1", "to_state": "scanright", "write": "1", "action": "RIGHT" },
+    "find_plus": [
+      { "read": ".", "to_state": "find_plus", "write": ".", "action": "RIGHT" },
+      { "read": "1", "to_state": "find_plus", "write": "1", "action": "RIGHT" },
       { "read": "+", "to_state": "shiftone", "write": "+", "action": "RIGHT" }
     ],
     "shiftone": [
       { "read": "1", "to_state": "shiftone", "write": "+", "action": "LEFT" },
-      { "read": "+", "to_state": "scanright", "write": "1", "action": "RIGHT" },
-      { "read": "=", "to_state": "cleanup", "write": "=", "action": "LEFT" }
+      { "read": "+", "to_state": "find_plus", "write": "1", "action": "RIGHT" },
+      { "read": "=", "to_state": "cleanup", "write": "=", "action": "LEFT" },
+      { "read": ".", "to_state": "shiftone", "write": ".", "action": "RIGHT" }
     ],
     "cleanup": [
-      { "read": "+", "to_state": "HALT", "write": ".", "action": "RIGHT" }
+      { "read": "+", "to_state": "HALT", "write": ".", "action": "RIGHT" },
+      { "read": ".", "to_state": "cleanup", "write": ".", "action": "LEFT" }
     ]
   }
 }
