@@ -1,6 +1,6 @@
 EXECUTABLE = ft_turing
 
-SOURCES	= types.ml \
+SOURCES	=	types.ml \
 			print_machine.ml \
 			executer.ml \
 			parser.ml \
