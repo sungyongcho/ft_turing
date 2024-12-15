@@ -1,7 +1,9 @@
 EXECUTABLE = ft_turing
 
-SOURCES	=	parser.ml \
+SOURCES	= types.ml \
 			print_machine.ml \
+			executer.ml \
+			parser.ml \
 			main.ml
 
 BIN_DIR = bin

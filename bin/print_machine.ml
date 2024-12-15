@@ -1,4 +1,4 @@
-open Parser
+open Types
 
 let print_transitions transitions =
   List.iter (fun (state, transitions_list) ->
@@ -44,4 +44,5 @@ let print_turing_machine machine =
   print_transitions machine.transitions;
 
   (* Print footer border *)
-  print_border ()
+  print_border ();
+
