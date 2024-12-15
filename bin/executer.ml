@@ -13,7 +13,7 @@ let highlight_char tape head_position blank =
     before ^ "<" ^ char_to_highlight ^ ">" ^ after
 
 (* Print the current state and tape *)
-let print_machine_state current_state head_position current_symbol formatted_tape =
+let print_machine_state current_state current_symbol formatted_tape =
   Printf.printf "[%s] (%s, %s)"
     formatted_tape
     current_state
@@ -63,7 +63,7 @@ let rec run machine current_state tape head_position =
   let formatted_tape = highlight_char tape head_position machine.blank in
 
   (* Print the current state and tape *)
-  print_machine_state current_state head_position current_symbol formatted_tape;
+  print_machine_state current_state current_symbol formatted_tape;
 
   (* Check if the current state is a final state *)
   if List.mem current_state machine.finals then (
