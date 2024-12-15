@@ -50,8 +50,31 @@ let validate_symbol symbol machine =
     exit 1
   )
 
+module StateSet = Set.Make(struct
+  type t = string * string * int  (* (state, tape, head_position) *)
+  let compare = compare
+end)
+
 (* Main execution loop *)
-let rec run machine current_state tape head_position =
+
+let rec run machine current_state tape head_position history blank_steps =
+  let max_blank_steps = 5 in (* adjustable *)
+  let current_config = (current_state, tape, head_position) in
+
+  (* Detect infinite loop *)
+  if StateSet.mem current_config history then (
+    Printf.printf "Error: Infinite loop detected. Halting.\n";
+    exit 1
+  );
+
+  (* Detect infinite run *)
+  if blank_steps > max_blank_steps then (
+    Printf.printf "Error: Infinite run detected. Halting.\n";
+    exit 1
+  );
+
+  let new_history = StateSet.add current_config history in
+
   let current_symbol =
     if head_position < 0 || head_position >= String.length tape then machine.blank
     else String.make 1 tape.[head_position]
@@ -89,9 +112,19 @@ let rec run machine current_state tape head_position =
         let new_tape = update_tape tape head_position transition.write in
         let new_head_position = update_head_position head_position transition.action in
 
-        run machine transition.to_state new_tape new_head_position
+        (* Update blank_steps: Increment if reading blank, reset otherwise *)
+        let new_blank_steps =
+          if current_symbol = machine.blank && transition.to_state = current_state then
+            blank_steps + 1
+          else
+            0
+        in
+
+        (* Continue execution with updated parameters *)
+        run machine transition.to_state new_tape new_head_position new_history new_blank_steps
   )
 
 (* Run the Turing machine *)
 let run_turing_machine machine tape =
-  run machine machine.initial tape 0
+  let initial_history = StateSet.empty in
+  run machine machine.initial tape 0 initial_history 0
