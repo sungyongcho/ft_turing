@@ -1,0 +1,25 @@
+{
+  "name": "0^n 1^n",
+  "alphabet": ["0", "1", ".", "n", "y"],
+  "blank": ".",
+  "states": ["find_01_pattern", "find_10_pattern", "to_end_halt_n", "HALT_Y", "HALT_N"],
+  "initial": "find_01_pattern",
+  "finals": ["HALT_Y", "HALT_N"],
+  "transitions": {
+    "find_01_pattern": [
+      { "read": "0", "to_state": "find_01_pattern", "write": "0", "action": "RIGHT" },
+      { "read": "1", "to_state": "find_10_pattern", "write": "1", "action": "RIGHT" },
+      { "read": ".", "to_state": "HALT_N", "write": "n", "action": "RIGHT" }
+    ],
+    "find_10_pattern": [
+      { "read": "0", "to_state": "to_end_halt_n", "write": "0", "action": "RIGHT" },
+      { "read": "1", "to_state": "find_10_pattern", "write": "1", "action": "RIGHT" },
+      { "read": ".", "to_state": "HALT_Y", "write": "y", "action": "RIGHT" }
+    ],
+    "to_end_halt_n": [
+      { "read": "0", "to_state": "to_end_halt_n", "write": "0", "action": "RIGHT" },
+      { "read": "1", "to_state": "to_end_halt_n", "write": "1", "action": "RIGHT" },
+      { "read": ".", "to_state": "HALT_N", "write": "n", "action": "RIGHT" }
+    ]
+  }
+}
