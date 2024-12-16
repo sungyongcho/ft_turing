@@ -14,7 +14,7 @@
     "shiftone": [
       { "read": "1", "to_state": "shiftone", "write": "+", "action": "LEFT" },
       { "read": "+", "to_state": "find_plus", "write": "1", "action": "RIGHT" },
-      { "read": "=", "to_state": "cleanup", "write": "=", "action": "LEFT" },
+      { "read": "=", "to_state": "cleanup", "write": ".", "action": "LEFT" },
       { "read": ".", "to_state": "shiftone", "write": ".", "action": "RIGHT" }
     ],
     "cleanup": [
