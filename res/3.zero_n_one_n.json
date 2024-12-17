@@ -2,18 +2,33 @@
   "name": "0^n 1^n",
   "alphabet": ["0", "1", ".", "n", "y"],
   "blank": ".",
-  "states": ["find_01_pattern", "find_10_pattern", "to_end_halt_n", "HALT_Y", "HALT_N"],
-  "initial": "find_01_pattern",
+  "states": ["init", "to_end", "find_1", "find_0", "to_begin", "find_0", "to_end_halt_n", "HALT_Y", "HALT_N"],
+  "initial": "init",
   "finals": ["HALT_Y", "HALT_N"],
   "transitions": {
-    "find_01_pattern": [
-      { "read": "0", "to_state": "find_01_pattern", "write": "0", "action": "RIGHT" },
-      { "read": "1", "to_state": "find_10_pattern", "write": "1", "action": "RIGHT" },
+    "init": [
+      { "read": "0", "to_state": "to_end", "write": ".", "action": "RIGHT" },
+      { "read": "1", "to_state": "to_end_halt_n", "write": "n", "action": "RIGHT" },
       { "read": ".", "to_state": "HALT_N", "write": "n", "action": "RIGHT" }
     ],
-    "find_10_pattern": [
+    "to_end": [
+      { "read": "0", "to_state": "to_end", "write": "0", "action": "RIGHT" },
+      { "read": "1", "to_state": "to_end", "write": "1", "action": "RIGHT" },
+      { "read": ".", "to_state": "find_1", "write": ".", "action": "LEFT" }
+    ],
+    "find_1": [
       { "read": "0", "to_state": "to_end_halt_n", "write": "0", "action": "RIGHT" },
-      { "read": "1", "to_state": "find_10_pattern", "write": "1", "action": "RIGHT" },
+      { "read": "1", "to_state": "to_begin", "write": ".", "action": "LEFT" },
+      { "read": ".", "to_state": "HALT_N", "write": "n", "action": "RIGHT" }
+    ],
+    "to_begin": [
+      { "read": "0", "to_state": "to_begin", "write": "0", "action": "LEFT" },
+      { "read": "1", "to_state": "to_begin", "write": "1", "action": "LEFT" },
+      { "read": ".", "to_state": "find_0", "write": ".", "action": "RIGHT" }
+    ],
+    "find_0": [
+      { "read": "0", "to_state": "to_end", "write": ".", "action": "RIGHT" },
+      { "read": "1", "to_state": "to_end_halt_n", "write": "1", "action": "RIGHT" },
       { "read": ".", "to_state": "HALT_Y", "write": "y", "action": "RIGHT" }
     ],
     "to_end_halt_n": [

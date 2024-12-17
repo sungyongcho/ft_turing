@@ -3,6 +3,7 @@
   "alphabet": ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "y", "n", "."],
   "blank": ".",
   "states": [
+    "init",
     "scan_num",
     "to_find_end_0",
     "to_find_end_1",
@@ -28,9 +29,22 @@
     "HALT_Y",
     "HALT_N"
   ],
-  "initial": "scan_num",
+  "initial": "init",
   "finals": ["HALT_Y", "HALT_N"],
   "transitions": {
+    "init": [
+      { "read": "0", "to_state": "to_find_end_0", "write": ".", "action": "RIGHT" },
+      { "read": "1", "to_state": "to_find_end_1", "write": ".", "action": "RIGHT" },
+      { "read": "2", "to_state": "to_find_end_2", "write": ".", "action": "RIGHT" },
+      { "read": "3", "to_state": "to_find_end_3", "write": ".", "action": "RIGHT" },
+      { "read": "4", "to_state": "to_find_end_4", "write": ".", "action": "RIGHT" },
+      { "read": "5", "to_state": "to_find_end_5", "write": ".", "action": "RIGHT" },
+      { "read": "6", "to_state": "to_find_end_6", "write": ".", "action": "RIGHT" },
+      { "read": "7", "to_state": "to_find_end_7", "write": ".", "action": "RIGHT" },
+      { "read": "8", "to_state": "to_find_end_8", "write": ".", "action": "RIGHT" },
+      { "read": "9", "to_state": "to_find_end_9", "write": ".", "action": "RIGHT" },
+      { "read": ".", "to_state": "HALT_N", "write": "n", "action": "RIGHT" }
+    ],
     "scan_num": [
       { "read": "0", "to_state": "to_find_end_0", "write": ".", "action": "RIGHT" },
       { "read": "1", "to_state": "to_find_end_1", "write": ".", "action": "RIGHT" },
