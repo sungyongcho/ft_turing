@@ -1,16 +1,21 @@
 open Types
 
+let green text =
+  let green_start = "\027[32m" in 
+  let reset = "\027[0m" in        
+  green_start ^ text ^ reset
+
 (* Highlight the tape at the head position *)
 let highlight_char tape head_position blank =
   if head_position < 0 then
-    "<" ^ blank ^ ">" ^ tape
+    (green "<") ^ blank ^ (green ">") ^ tape
   else if head_position >= String.length tape then
-    tape ^ "<" ^ blank ^ ">"
+    tape ^ (green "<") ^ blank ^ (green ">")
   else
     let before = String.sub tape 0 head_position in
     let char_to_highlight = String.sub tape head_position 1 in
     let after = String.sub tape (head_position + 1) (String.length tape - head_position - 1) in
-    before ^ "<" ^ char_to_highlight ^ ">" ^ after
+    before ^ (green "<") ^ char_to_highlight ^ (green ">") ^ after
 
 (* Print the current state and tape *)
 let print_machine_state current_state current_symbol formatted_tape =
