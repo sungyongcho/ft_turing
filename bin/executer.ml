@@ -1,4 +1,8 @@
 open Types
+module StateSet = Set.Make(struct
+  type t = string * string * int  (* (state, tape, head_position) *)
+  let compare = compare
+end)
 
 let marking text =
   let marking_start = "\027[47;30m" in 
@@ -31,6 +35,35 @@ let print_transition_info transition =
     transition.write
     (match transition.action with Left -> "LEFT" | Right -> "RIGHT")
 
+    let calculate_complexity steps tape_length visits =
+  if steps >= 1_000_000 then
+    "Infinite"
+  else
+    let max_visits = List.fold_left (fun acc (_, v) -> max acc v) 0 visits in
+    if steps >= tape_length && steps <= 2 * tape_length then
+      "Linear (O(n))"
+    else if max_visits >= 2 * tape_length then
+      "Exponential (O(2^n))"
+    else if max_visits >= tape_length then
+      "Quadratic (O(n^2))"
+    else
+      "Constant (O(1))"
+
+
+(* Function to display results: Total Steps, Max State Visits, and optional Time Complexity *)
+let print_results step_count visits tape_length is_error =
+  (* Find the state with the maximum visits *)
+  let max_state, max_visits =
+    List.fold_left (fun (max_s, max_c) (s, c) -> if c > max_c then (s, c) else (max_s, max_c)) ("", 0) visits
+  in
+  (* Calculate complexity and only print if it is not empty *)
+  let complexity = calculate_complexity step_count tape_length visits in
+  Printf.printf "Total Steps: %d\n" step_count;
+  Printf.printf "Max State Visits: %s (%d times)\n" max_state max_visits;
+  (match is_error with
+  | true -> () (* Do nothing if complexity is empty *)
+  | false -> Printf.printf "Time Complexity: %s\n" complexity)
+
 (* Update the tape based on the head position and the new symbol to write *)
 let update_tape tape head_position write_symbol =
   if head_position < 0 then
@@ -54,27 +87,23 @@ let validate_symbol symbol machine =
     Printf.printf "Error: Invalid character '%s' encountered on the tape. Halting.\n" symbol;
     exit 1
   )
-
-module StateSet = Set.Make(struct
-  type t = string * string * int  (* (state, tape, head_position) *)
-  let compare = compare
-end)
-
-(* Main execution loop *)
-
-let rec run machine current_state tape head_position history blank_steps =
-  let max_blank_steps = 5 in (* adjustable *)
+    
+(* Main execution loop with steps and visits tracking *)
+let rec run machine current_state tape head_position history blank_steps step_count visits =
+  let max_blank_steps = 20 in (* adjustable *)
   let current_config = (current_state, tape, head_position) in
 
   (* Detect infinite loop *)
   if StateSet.mem current_config history then (
     Printf.printf "Error: Infinite loop detected. Halting.\n";
+    print_results step_count visits (String.length tape) true;
     exit 1
   );
 
   (* Detect infinite run *)
   if blank_steps > max_blank_steps then (
     Printf.printf "Error: Infinite run detected. Halting.\n";
+    print_results step_count visits (String.length tape) true;
     exit 1
   );
 
@@ -93,9 +122,19 @@ let rec run machine current_state tape head_position history blank_steps =
   (* Print the current state and tape *)
   print_machine_state current_state current_symbol formatted_tape;
 
+  (* Update visits *)
+  let updated_visits =
+    let found = List.exists (fun (s, _) -> s = current_state) visits in
+    if found then
+      List.map (fun (s, c) -> if s = current_state then (s, c + 1) else (s, c)) visits
+    else
+      (current_state, 1) :: visits
+  in
+
   (* Check if the current state is a final state *)
   if List.mem current_state machine.finals then (
     Printf.printf " -> Machine halted in final state: %s\n" current_state;
+    print_results step_count visits (String.length tape) false;
     tape
   ) else (
     (* Look for a transition for the current state and symbol *)
@@ -108,6 +147,7 @@ let rec run machine current_state tape head_position history blank_steps =
     | None ->
         Printf.printf " -> No transition found for state: %s, symbol: %s\n"
           current_state current_symbol;
+        print_results step_count updated_visits (String.length tape) false;
         tape
     | Some transition ->
         (* Print the transition information *)
@@ -126,10 +166,11 @@ let rec run machine current_state tape head_position history blank_steps =
         in
 
         (* Continue execution with updated parameters *)
-        run machine transition.to_state new_tape new_head_position new_history new_blank_steps
+        run machine transition.to_state new_tape new_head_position new_history new_blank_steps (step_count + 1) updated_visits
   )
 
 (* Run the Turing machine *)
 let run_turing_machine machine tape =
   let initial_history = StateSet.empty in
-  run machine machine.initial tape 0 initial_history 0
+  let initial_visits = [] in
+  run machine machine.initial tape 0 initial_history 0 0 initial_visits

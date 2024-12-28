@@ -8,7 +8,7 @@
   "transitions": {
     "init": [
       { "read": "0", "to_state": "to_end", "write": ".", "action": "RIGHT" },
-      { "read": "1", "to_state": "to_end_halt_n", "write": "n", "action": "RIGHT" },
+      { "read": "1", "to_state": "to_end_halt_n", "write": "1", "action": "RIGHT" },
       { "read": ".", "to_state": "HALT_N", "write": "n", "action": "RIGHT" }
     ],
     "to_end": [
