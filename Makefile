@@ -8,7 +8,7 @@ SOURCES	=	types.ml \
 
 BIN_DIR = bin
 
-LIBS = yojson ocamlfind
+LIBS = yojson
 
 # Compiler and linker flags
 OCAMLFLAGS = -thread
@@ -30,12 +30,17 @@ OPAM = opam
 all: check_deps build_native
 
 check_deps:
+	@if ! command -v ocamlfind >/dev/null 2>&1; then \
+	  echo "Installing missing tool: ocamlfind"; \
+	  $(OPAM) install -y ocamlfind; \
+	fi
 	@for lib in $(LIBS); do \
 	  if ! $(OPAM) list --installed --short | grep -q "^$$lib$$"; then \
 	    echo "Installing missing library: $$lib"; \
 	    $(OPAM) install -y $$lib; \
 	  fi; \
 	done
+
 
 build_native: $(CMXS)
 	$(OCAMLOPT) $(OCAMLFLAGS) $(PKGFLAGS) $(INCLUDE_DIRS) -o $(EXECUTABLE) $^
