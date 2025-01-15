@@ -8,7 +8,7 @@ SOURCES	=	types.ml \
 
 BIN_DIR = bin
 
-LIBS = yojson
+LIBS = yojson ocamlfind
 
 # Compiler and linker flags
 OCAMLFLAGS = -thread
