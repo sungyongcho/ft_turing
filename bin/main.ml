@@ -37,14 +37,24 @@ let () =
   );
 
   (* Parse and store the machine *)
-  let machine_json = Yojson.Safe.from_file !jsonfile in
-  let machine = Parser.turing_machine_of_yojson machine_json in
+  let machine =
+    try
+      let machine_json = Yojson.Safe.from_file !jsonfile in
+      Parser.turing_machine_of_yojson machine_json
+    with
+    | Sys_error msg ->
+        Printf.eprintf "Error: Unable to open file %s. %s\n" !jsonfile msg;
+        exit 1  (* Exit with error code *)
+    | Yojson.Json_error msg ->
+        Printf.eprintf "Error: Failed to parse JSON in file %s. %s\n" !jsonfile msg;
+        exit 1
+    in
 
-  (* print_endline ("Machine name: " ^ machine.name); *)
-  Print_machine.print_turing_machine machine;
+    (* print_endline ("Machine name: " ^ machine.name); *)
+    Print_machine.print_turing_machine machine;
 
-  (* Run the Turing machine *)
-  let _ = Executer.run_turing_machine machine !input_arg in
+    (* Run the Turing machine *)
+    let _ = Executer.run_turing_machine machine !input_arg in
 
-  (* Exit successfully *)
-  exit 0
+    (* Exit successfully *)
+    exit 0
