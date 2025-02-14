@@ -44,22 +44,30 @@ let validate_final_states finals states =
  finals
 
 let turing_machine_of_yojson json =
-  let name = json |> member "name" |> to_string in
-  let alphabet = json |> member "alphabet" |> to_list |> filter_string in
-  let blank = json |> member "blank" |> to_string in
-  let states = json |> member "states" |> to_list |> filter_string in
-  let initial = json |> member "initial" |> to_string in
-  let finals = json |> member "finals" |> to_list |> filter_string in
-  let transitions = json |> member "transitions" |> transitions_of_yojson states in
-  validate_blank_alphabet blank alphabet;
-  validate_initial_state initial states;
-  validate_final_states finals states;
-  {
-    name = name;
-    alphabet = alphabet;
-    blank = blank;
-    states = states;
-    initial = initial;
-    finals = finals;
-    transitions = transitions;
-  }
+  try
+    let name = json |> member "name" |> to_string in
+    let alphabet = json |> member "alphabet" |> to_list |> filter_string in
+    let blank = json |> member "blank" |> to_string in
+    let states = json |> member "states" |> to_list |> filter_string in
+    let initial = json |> member "initial" |> to_string in
+    let finals = json |> member "finals" |> to_list |> filter_string in
+    let transitions = json |> member "transitions" |> transitions_of_yojson states in
+    validate_blank_alphabet blank alphabet;
+    validate_initial_state initial states;
+    validate_final_states finals states;
+    {
+      name = name;
+      alphabet = alphabet;
+      blank = blank;
+      states = states;
+      initial = initial;
+      finals = finals;
+      transitions = transitions;
+    }
+  with
+  | Yojson.Safe.Util.Type_error (msg, json) ->
+      prerr_endline "Error: Invalid Turing machine";
+      exit 1
+  | Failure msg ->
+      Printf.eprintf "Error: Unexpected error: %s\n" msg;
+      exit 1

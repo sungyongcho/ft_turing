@@ -44,7 +44,7 @@ let () =
     with
     | Sys_error msg ->
         Printf.eprintf "Error: Unable to open file %s. %s\n" !jsonfile msg;
-        exit 1  (* Exit with error code *)
+        exit 1
     | Yojson.Json_error msg ->
         Printf.eprintf "Error: Failed to parse JSON in file %s. %s\n" !jsonfile msg;
         exit 1
